@@ -117,13 +117,13 @@ sub read_acbe_cal {
         print "Work with track '$openrunner_url:\n";
         
         $month = replace_month_name_by_number($month);
-        my $id = "${name}_$year-$month-${day}_$time";
+        my $id = "${name}_$year-$month-${day}_${time}";
         my ($openrunner_id) = ($openrunner_url =~ m{/(\d+)$});
         
         my $gpx_track_url = "https://www.openrunner.com/route/$openrunner_id/gpx?type=0";
         
         print "\tDownload track $openrunner_id from $name plan $day/$month/$year, $time\n";
-        my $gpx_file = File::Spec->catfile(DOWNLOADS, "$name.gpx");
+        my $gpx_file = File::Spec->catfile(DOWNLOADS, "${name}-${openrunner_id}.gpx");
         my $code     = LWP::Simple::getstore($gpx_track_url, $gpx_file);
         print "\tDownload track $openrunner_id done with code $code\n";
         if ($code != 200) {
@@ -137,7 +137,7 @@ sub read_acbe_cal {
             print "\tRewrite track '$gpx_file' - change title...\n";
             open my $fh, $gpx_file or croak "Error 300 - Cannot open file '$gpx_file': $!\n";
             while (<$fh>) {
-                s{<name>(\d+)-([^<]+)</name>}{<name>$2-$1</name>} if (m{<name>});
+                s{<name>(\d+)-([^<]+)</name>}{<name>$2-$1-${openrunner_id}</name>} if (m{<name>});
                 push @gpx, $_;
             }
             close $fh;
