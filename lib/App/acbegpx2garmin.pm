@@ -105,7 +105,7 @@ sub read_acbe_cal {
     
     DEBUG && carp "DEBUG - HTTP: $content\n";
     URL: while ($content =~ m{
-        <td[^>]*>\w+\s+(\d+)\s+(\S+)\s+(\d+)</td><td[^>]*>([\dh]+).*? # la date
+        <td[^>]*prochain[^>]*>\w+\s+(\d+)\s+(\S+)\s+(\d+)</td><td[^>]*>([\dh]+).*? # la date
         <a\s+href="              # le starter de lien
         (\S+openrunner[^"]+)     # le lien openrunner
         "[^>]*>                  # la fin du de la balise de lien
@@ -123,7 +123,7 @@ sub read_acbe_cal {
         my $gpx_track_url = "https://www.openrunner.com/route/$openrunner_id/gpx?type=0";
         
         print "\tDownload track $openrunner_id from $name plan $day/$month/$year, $time\n";
-        my $gpx_file = File::Spec->catfile(DOWNLOADS, "${name}-${openrunner_id}.gpx");
+        my $gpx_file = File::Spec->catfile(DOWNLOADS, "${id}-${openrunner_id}.gpx");
         my $code     = LWP::Simple::getstore($gpx_track_url, $gpx_file);
         print "\tDownload track $openrunner_id done with code $code\n";
         if ($code != 200) {
@@ -137,7 +137,7 @@ sub read_acbe_cal {
             print "\tRewrite track '$gpx_file' - change title...\n";
             open my $fh, $gpx_file or croak "Error 300 - Cannot open file '$gpx_file': $!\n";
             while (<$fh>) {
-                s{<name>(\d+)-([^<]+)</name>}{<name>$2-$1-${openrunner_id}</name>} if (m{<name>});
+                s{<name>(\d+)-([^<]+)</name>}{<name>$2-$1 $day/$month</name>} if (m{<name>});
                 push @gpx, $_;
             }
             close $fh;
