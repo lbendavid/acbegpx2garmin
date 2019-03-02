@@ -21,7 +21,6 @@
 Ce module contient notre programme
 """
 
-
 import os
 import os.path
 import re
@@ -31,6 +30,12 @@ import sys
 import re
 import shutil
 
+"""
+Variables importantes / valeur par défaut
+"""
+url          = 'http://acbe.ffct.org/Calendrier/'
+code_page    = 'iso8859-1'
+download_dir = os.path.join(os.path.expanduser("~"), "Downloads", "gpx")
 
 """
 Template expression régulière
@@ -51,7 +56,7 @@ patterns = {
 }
 patterns_compiled = { re.compile(p, re.I): v for p, v in patterns.items() }
 
-re_tag       = re.compile(r"""
+re_tag            = re.compile(r"""
         <td[^>]*prochain[^>]*>\w+\s+(\d+)\s+(\S+)\s+(\d+)</td><td[^>]*>([\dh]+).*? # la date
         <a\s+href="                                                                # le starter de lien
         (\S+openrunner[^"]+)                                                       # le lien openrunner
@@ -59,7 +64,7 @@ re_tag       = re.compile(r"""
         <img\s+title="Open\w+\s+                                                   # l'image avec un titre
         ([^"]+)""", re.VERBOSE | re.MULTILINE | re.DOTALL)
 
-re_id        = re.compile(r'/(\d+)$')
+re_id             = re.compile(r'/(\d+)$')
 
 re_replace_track = re.compile(r'<name>(\d+)-([^<]+)</name>')
 """
@@ -84,11 +89,6 @@ if __name__ == '__main__':
             if regexp.match(text):
                 return result
 
-    url          = 'http://acbe.ffct.org/Calendrier/'
-    code_page    = 'iso8859-1'
-
-
-    download_dir = os.path.join(os.path.expanduser("~"), "Downloads", "gpx")
     try:
         os.mkdir(download_dir)
     except:
