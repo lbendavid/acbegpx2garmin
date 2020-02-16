@@ -141,7 +141,7 @@ def def_track_name_from_content(item, id):
     # Find month number from month name
     month = switch_re(patterns_compiled, month)
     id    = openrunner_id_from_url(url_openrunner)
-    return (name, id, "{}_{}_{}-{}".format(name, id, day, month))
+    return (name, id, "{}_{}_{}-{}".format(name, id, day, month), day, month, year)
 
 def download_openrunner_track_id(id, gpx_local_file):
     """
@@ -211,7 +211,7 @@ if __name__ == '__main__':
 
     print("Finding track for openrunner {}...".format(id))
     for item in re_tag.findall(content):
-        name, id, track_name = def_track_name_from_content(item)
+        name, id, track_name, day, month, year = def_track_name_from_content(item, id)
         print("Found track {}".format(track_name))
         gpx_file = os.path.join(download_dir, "{}_{}.gpx".format(name, id))
 
@@ -233,7 +233,11 @@ if __name__ == '__main__':
             target = os.path.join(garmin_dir, os.path.basename(tmp_file))
             print("GARMIN Destination file: {}".format(target))
             shutil.move(tmp_file, target)
-            time.sleep(10)
+            time.sleep(1)
+            if os.path.isfile(target):
+                print("GARMIN copied: {}".format(target))
+            else
+                logging.fatal("Unable to copy file {}".format(target))
 
     if device:
         eject_usb_device(device)
